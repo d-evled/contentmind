@@ -3,3 +3,4 @@ export * from "./chunk";
 export * from "./similarity";
 export * from "./provider";
 export * from "./tools";
+export * from "./citations";
