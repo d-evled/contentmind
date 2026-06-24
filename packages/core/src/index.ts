@@ -4,3 +4,4 @@ export * from "./similarity";
 export * from "./provider";
 export * from "./tools";
 export * from "./citations";
+export * from "./rate-limit";
