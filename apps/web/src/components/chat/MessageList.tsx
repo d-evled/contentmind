@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { computeScrollState } from "@contentmind/core";
+import { computeScrollState, type Citation } from "@contentmind/core";
 import type { UIMessage } from "ai";
 import { Message } from "./Message";
 import { JumpToLatest } from "./JumpToLatest";
@@ -8,9 +8,11 @@ import { JumpToLatest } from "./JumpToLatest";
 export function MessageList({
   messages,
   isStreaming,
+  onCitationActivate = () => {},
 }: {
   messages: UIMessage[];
   isStreaming: boolean;
+  onCitationActivate?: (c: Citation) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [showJump, setShowJump] = useState(false);
@@ -56,7 +58,7 @@ export function MessageList({
         <ol className="mx-auto flex max-w-2xl flex-col gap-6">
           {messages.map((m) => (
             <li key={m.id}>
-              <Message message={m} />
+              <Message message={m} onCitationActivate={onCitationActivate} />
             </li>
           ))}
         </ol>
