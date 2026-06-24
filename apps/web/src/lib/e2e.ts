@@ -1,21 +1,23 @@
 /**
  * E2E test mode guard.
  *
- * Returns true when the E2E_BYPASS_AUTH env var is "1" at runtime.
+ * Returns true only when BOTH independent conditions are met:
+ *   1. E2E_BYPASS_AUTH === "1"  — the explicit opt-in flag (baked at build
+ *      time by next.config.ts `env`, so Turbopack cannot dead-code-eliminate
+ *      the check).  Playwright webServer sets this; Vercel production builds
+ *      leave it unset (""), making it permanently off for those binaries.
+ *   2. AI_PROVIDER === "mock"  — the mock-provider flag.  This is NOT listed
+ *      in next.config.ts `env`, so it is read at runtime rather than being
+ *      inlined by Turbopack.  A production server always uses a real provider
+ *      (google / groq / unset), so this condition is structurally impossible
+ *      to satisfy in production even if E2E_BYPASS_AUTH were somehow set.
  *
- * Production safety: Next.js build (next build) bakes env vars declared in
- * next.config.ts `env` into the bundle.  E2E_BYPASS_AUTH is only declared
- * there (value comes from the shell), so:
- *   • Playwright webServer sets E2E_BYPASS_AUTH=1 → baked as "1" → bypass ON.
- *   • Vercel / CI production builds have no E2E_BYPASS_AUTH → baked as "" →
- *     bypass permanently OFF; the env var cannot be injected at runtime to
- *     re-enable it because Turbopack replaces the reference with the
- *     build-time literal.
- *
- * For defense-in-depth, keep the NODE_ENV guard in the consuming call sites
- * (layout.tsx, chat/route.ts) rather than here, so this helper stays simple.
+ * Defense-in-depth: an attacker who somehow injects E2E_BYPASS_AUTH=1 into
+ * a production environment still cannot bypass auth, because production
+ * servers never run with AI_PROVIDER=mock.
  */
-export const isE2E = () => process.env.E2E_BYPASS_AUTH === "1";
+export const isE2E = () =>
+  process.env.E2E_BYPASS_AUTH === "1" && process.env.AI_PROVIDER === "mock";
 
 /** Synthetic user ID used throughout the e2e run (no real DB row needed). */
 export const E2E_USER_ID = "e2e-user";

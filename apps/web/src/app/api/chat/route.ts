@@ -25,7 +25,8 @@ export async function POST(req: Request) {
 
   if (isE2E()) {
     // e2e mode: skip real auth and DB rate limit entirely.
-    // Gated by NODE_ENV !== "production" so this path is unreachable in prod.
+    // isE2E() requires both E2E_BYPASS_AUTH=1 AND AI_PROVIDER=mock, so this
+    // path is structurally unreachable on a production server.
     userId = E2E_USER_ID;
   } else {
     // Production path: real auth + DB-backed rate limit (unchanged).
