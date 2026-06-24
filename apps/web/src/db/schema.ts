@@ -3,11 +3,10 @@ import {
   text,
   timestamp,
   integer,
-  boolean,
   primaryKey,
   index,
+  vector,
 } from "drizzle-orm/pg-core";
-import { vector } from "drizzle-orm/pg-core";
 
 // --- Auth.js tables ---
 
