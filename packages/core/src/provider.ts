@@ -12,8 +12,22 @@ export interface ProviderEnv {
 
 export function pickProvider(env: ProviderEnv): ProviderName {
   const override = env.AI_PROVIDER?.toLowerCase();
-  if (override === "mock" || override === "google" || override === "groq") {
-    return override;
+  if (override === "mock") return "mock";
+  if (override === "google") {
+    if (!env.GOOGLE_GENERATIVE_AI_API_KEY) {
+      throw new Error(
+        "AI_PROVIDER=google is set but GOOGLE_GENERATIVE_AI_API_KEY is missing"
+      );
+    }
+    return "google";
+  }
+  if (override === "groq") {
+    if (!env.GROQ_API_KEY) {
+      throw new Error(
+        "AI_PROVIDER=groq is set but GROQ_API_KEY is missing"
+      );
+    }
+    return "groq";
   }
   if (env.GOOGLE_GENERATIVE_AI_API_KEY) return "google";
   if (env.GROQ_API_KEY) return "groq";

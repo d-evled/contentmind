@@ -33,4 +33,13 @@ describe("toolCardReducer", () => {
     const s = toolCardReducer(initialToolCard("searchDocuments"), { type: "resolve", result: 1 });
     expect(s.status).toBe("pending");
   });
+
+  it("ignores a second invoke when already running, preserving first args", () => {
+    const initial = initialToolCard("searchDocuments");
+    const afterFirst = toolCardReducer(initial, { type: "invoke", args: { query: "first" } });
+    expect(afterFirst.status).toBe("running");
+    const afterSecond = toolCardReducer(afterFirst, { type: "invoke", args: { query: "second" } });
+    expect(afterSecond.status).toBe("running");
+    expect(afterSecond.args).toEqual({ query: "first" });
+  });
 });

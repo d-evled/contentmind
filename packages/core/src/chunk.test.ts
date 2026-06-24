@@ -25,4 +25,17 @@ describe("chunkText", () => {
   it("uses sensible defaults", () => {
     expect(chunkText("short")).toEqual(["short"]);
   });
+
+  it("produces exactly 2 chunks of length 100 when text aligns perfectly (size=100, overlap=0)", () => {
+    const chunks = chunkText("x".repeat(200), { size: 100, overlap: 0 });
+    expect(chunks.length).toBe(2);
+    expect(chunks[0]!.length).toBe(100);
+    expect(chunks[1]!.length).toBe(100);
+  });
+
+  it("throws when overlap is negative", () => {
+    expect(() => chunkText("hello world", { size: 100, overlap: -1 })).toThrow(
+      "overlap must be non-negative"
+    );
+  });
 });

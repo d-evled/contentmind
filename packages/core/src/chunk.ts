@@ -10,6 +10,7 @@ export interface ChunkOptions {
 export function chunkText(text: string, opts: ChunkOptions = {}): string[] {
   const size = opts.size ?? 1000;
   const overlap = opts.overlap ?? 150;
+  if (overlap < 0) throw new Error("overlap must be non-negative");
   if (overlap >= size) throw new Error("overlap must be smaller than size");
 
   const trimmed = text.trim();

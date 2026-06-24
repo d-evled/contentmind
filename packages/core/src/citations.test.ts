@@ -30,4 +30,9 @@ describe("extractCitations", () => {
   it("returns empty array when there are no markers", () => {
     expect(extractCitations("no citations here", sources)).toEqual([]);
   });
+
+  it("preserves insertion order, not numeric order", () => {
+    const cites = extractCitations("[2] first, then [1]", sources);
+    expect(cites.map((c) => c.marker)).toEqual([2, 1]);
+  });
 });

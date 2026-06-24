@@ -22,4 +22,18 @@ describe("checkRateLimit (fixed window)", () => {
     expect(r.allowed).toBe(true);
     expect(r.remaining).toBe(3);
   });
+
+  it("excludes a timestamp exactly at the window boundary (now - windowMs)", () => {
+    // cutoff = 100_000 - 60_000 = 40_000; t > cutoff is false for t === 40_000
+    const r = checkRateLimit([40_000], { now: 100_000, limit, windowMs });
+    expect(r.allowed).toBe(true);
+    expect(r.remaining).toBe(3);
+  });
+
+  it("counts a timestamp one ms inside the window (40_001)", () => {
+    // 40_001 > 40_000 → counted
+    const r = checkRateLimit([40_001], { now: 100_000, limit, windowMs });
+    expect(r.allowed).toBe(true);
+    expect(r.remaining).toBe(2);
+  });
 });

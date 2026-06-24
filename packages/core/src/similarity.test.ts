@@ -21,6 +21,9 @@ describe("cosineSimilarity", () => {
   it("throws on length mismatch", () => {
     expect(() => cosineSimilarity([1], [1, 2])).toThrow();
   });
+  it("returns 0 for a zero vector", () => {
+    expect(cosineSimilarity([0, 0, 0], [1, 0, 0])).toBe(0);
+  });
 });
 
 describe("rankChunks", () => {
