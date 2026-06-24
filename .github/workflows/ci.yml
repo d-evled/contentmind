@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  AI_PROVIDER: mock
+  E2E_BYPASS_AUTH: "1"
+
+jobs:
+  ci:
+    name: Typecheck · Lint · Test · Build · E2E
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @contentmind/web exec playwright install --with-deps chromium
+
+      - name: Build (for E2E)
+        env:
+          DATABASE_URL: postgres://u:p@localhost/db
+          AUTH_SECRET: e2e-secret-at-least-32-chars-long!!
+          AUTH_GITHUB_ID: x
+          AUTH_GITHUB_SECRET: y
+        run: pnpm --filter @contentmind/web build
+
+      - name: E2E tests
+        env:
+          DATABASE_URL: postgres://u:p@localhost/db
+          AUTH_SECRET: e2e-secret-at-least-32-chars-long!!
+          AUTH_GITHUB_ID: x
+          AUTH_GITHUB_SECRET: y
+        run: pnpm --filter @contentmind/web test:e2e
