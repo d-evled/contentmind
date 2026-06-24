@@ -7,6 +7,7 @@ import { ToolCard, type ToolPart } from "./ToolCard";
 
 interface SearchHit {
   chunkId: string;
+  documentId: string;
   documentName: string;
   quote: string;
 }
@@ -42,7 +43,7 @@ export function Message({
 
   const sources: Chunk[] = searchHits.map((h, i) => ({
     id: h.chunkId,
-    documentId: h.chunkId,
+    documentId: h.documentId,
     documentName: h.documentName,
     index: i,
     content: h.quote,
@@ -61,8 +62,8 @@ export function Message({
           : "max-w-none"
       }
     >
-      {toolParts.map((p, i) => (
-        <ToolCard key={i} part={p} />
+      {toolParts.map((p) => (
+        <ToolCard key={p.toolCallId} part={p} />
       ))}
       <div className="prose prose-neutral max-w-none">
         <ReactMarkdown>{text}</ReactMarkdown>

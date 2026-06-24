@@ -8,6 +8,7 @@ interface SearchHit {
 
 export interface ToolPart {
   type: string;       // e.g. "tool-searchDocuments"
+  toolCallId: string;
   state: string;      // "input-streaming" | "input-available" | "output-available" | "output-error"
   input?: unknown;
   output?: unknown;
@@ -16,7 +17,8 @@ export interface ToolPart {
 
 export function ToolCard({ part }: { part: ToolPart }) {
   const name = part.type.replace(/^tool-/, "");
-  const running = part.state !== "output-available";
+  const running = part.state === "input-streaming" || part.state === "input-available";
+  const errored = part.state === "output-error";
   const label =
     name === "searchDocuments" ? "Searching documents" : "Extracting fields";
 
@@ -29,12 +31,12 @@ export function ToolCard({ part }: { part: ToolPart }) {
             aria-label={`${label}…`}
             className="inline-block size-3 animate-pulse rounded-full bg-blue-500"
           />
-        ) : (
+        ) : !errored ? (
           <span
             aria-hidden="true"
             className="inline-block size-3 rounded-full bg-green-500"
           />
-        )}
+        ) : null}
         {running ? `${label}…` : `${label} — done`}
       </div>
       {part.state === "output-available" && name === "searchDocuments" && (

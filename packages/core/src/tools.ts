@@ -3,6 +3,7 @@ import { z } from "zod";
 
 export interface SearchHit {
   chunkId: string;
+  documentId: string;
   documentName: string;
   quote: string;
 }

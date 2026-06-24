@@ -8,6 +8,7 @@ describe("ToolCard", () => {
       <ToolCard
         part={{
           type: "tool-searchDocuments",
+          toolCallId: "tc1",
           state: "input-available",
           input: { query: "x" },
         }}
@@ -22,6 +23,7 @@ describe("ToolCard", () => {
       <ToolCard
         part={{
           type: "tool-searchDocuments",
+          toolCallId: "tc2",
           state: "output-available",
           input: { query: "x" },
           output: [{ chunkId: "c1", documentName: "a.pdf", quote: "hello" }],

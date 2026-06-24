@@ -46,6 +46,7 @@ export function Composer({
         }}
         rows={1}
         placeholder="Ask about your documents…"
+        disabled={isStreaming}
         className="min-h-11 flex-1 resize-none rounded-xl border px-3 py-2"
       />
       {isStreaming ? (

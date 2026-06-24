@@ -53,7 +53,7 @@ export function ChatPanel() {
         onStop={stop}
         onRegenerate={regenerate}
         isStreaming={isStreaming}
-        canRegenerate={messages.length > 0}
+        canRegenerate={messages.some((m) => m.role === "assistant")}
       />
     </section>
   );

@@ -46,6 +46,7 @@ export async function POST(req: Request) {
       const hits = await retrieve(query, userId, k);
       return hits.map((c) => ({
         chunkId: c.id,
+        documentId: c.documentId,
         documentName: c.documentName,
         quote: c.content,
       }));

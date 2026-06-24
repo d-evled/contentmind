@@ -4,12 +4,12 @@ import { searchDocumentsTool, extractFieldsTool, searchDocumentsInputSchema } fr
 describe("searchDocumentsTool", () => {
   it("validates input and delegates to ctx.search", async () => {
     const search = vi.fn().mockResolvedValue([
-      { documentName: "a.pdf", quote: "hello", chunkId: "c1" }
+      { documentName: "a.pdf", quote: "hello", chunkId: "c1", documentId: "d1" }
     ]);
     const tool = searchDocumentsTool({ search, extract: vi.fn() });
     const out = await tool.execute!({ query: "hi", k: 3 }, { toolCallId: "t", messages: [] });
     expect(search).toHaveBeenCalledWith("hi", 3);
-    expect(out).toEqual([{ documentName: "a.pdf", quote: "hello", chunkId: "c1" }]);
+    expect(out).toEqual([{ documentName: "a.pdf", quote: "hello", chunkId: "c1", documentId: "d1" }]);
   });
 
   it("rejects invalid input (missing query)", () => {
