@@ -6,6 +6,7 @@ type UploadStatus = "idle" | "uploading" | "done" | "error";
 export function DocUpload() {
   const [status, setStatus] = useState<UploadStatus>("idle");
   const [dragOver, setDragOver] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("Upload failed — please try again");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const upload = async (file: File) => {
@@ -14,8 +15,15 @@ export function DocUpload() {
     body.append("file", file);
     try {
       const res = await fetch("/api/upload", { method: "POST", body });
-      setStatus(res.ok ? "done" : "error");
+      if (res.ok) {
+        setStatus("done");
+      } else {
+        const data = (await res.json().catch(() => null)) as { error?: string } | null;
+        setErrorMsg(data?.error ?? "Upload failed — please try again");
+        setStatus("error");
+      }
     } catch {
+      setErrorMsg("Upload failed — please try again");
       setStatus("error");
     }
   };
@@ -24,7 +32,7 @@ export function DocUpload() {
     idle: "",
     uploading: "Processing…",
     done: "Ready ✓",
-    error: "Upload failed — please try again",
+    error: errorMsg,
   };
 
   return (
