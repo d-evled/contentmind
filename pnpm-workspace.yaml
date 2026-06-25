@@ -1,0 +1,8 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Suppress postinstall warnings from native-build deps used in apps/web.
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver
