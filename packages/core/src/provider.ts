@@ -56,8 +56,16 @@ export function createChatModel(provider: ProviderName): LanguageModel {
   }
 }
 
+/**
+ * Output dimension requested from the embedding model. MUST match the
+ * pgvector `embedding` column (vector(768)). Both ingest and retrieval pass
+ * this via providerOptions so stored and query vectors are comparable.
+ */
+export const EMBEDDING_DIMENSIONS = 768;
+
 export function createEmbeddingModel(): EmbeddingModel {
-  // Gemini embeddings are free; 768 dims.
-  // textEmbeddingModel is deprecated in @ai-sdk/google v3 — use embeddingModel instead.
-  return google.embeddingModel("text-embedding-004");
+  // Gemini's current embedding model (free tier). Its default output is 3072
+  // dims; callers pass `outputDimensionality: EMBEDDING_DIMENSIONS` to reduce
+  // it to 768. (text-embedding-004 was retired from the v1beta API.)
+  return google.embeddingModel("gemini-embedding-001");
 }

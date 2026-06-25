@@ -1,7 +1,7 @@
 import { embedMany } from "ai";
 import { sql } from "drizzle-orm";
 import { extractText } from "unpdf";
-import { chunkText } from "@contentmind/core";
+import { chunkText, EMBEDDING_DIMENSIONS } from "@contentmind/core";
 import { db } from "@/db";
 import { documents, chunks } from "@/db/schema";
 import { embeddingModel } from "./ai";
@@ -36,6 +36,9 @@ export async function ingestFile(file: File, userId: string): Promise<string> {
     const { embeddings } = await embedMany({
       model: embeddingModel(),
       values: pieces,
+      providerOptions: {
+        google: { outputDimensionality: EMBEDDING_DIMENSIONS },
+      },
     });
     await db.insert(chunks).values(
       pieces.map((content, index) => ({

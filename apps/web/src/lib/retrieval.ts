@@ -3,7 +3,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@/db";
 import { chunks, documents } from "@/db/schema";
 import { embeddingModel } from "./ai";
-import type { Chunk } from "@contentmind/core";
+import { EMBEDDING_DIMENSIONS, type Chunk } from "@contentmind/core";
 
 /**
  * Embed the query and run a pgvector cosine-distance search scoped to the user.
@@ -14,7 +14,11 @@ export async function retrieve(
   userId: string,
   k = 4
 ): Promise<Chunk[]> {
-  const { embedding } = await embed({ model: embeddingModel(), value: query });
+  const { embedding } = await embed({
+    model: embeddingModel(),
+    value: query,
+    providerOptions: { google: { outputDimensionality: EMBEDDING_DIMENSIONS } },
+  });
   const vec = `[${embedding.join(",")}]`;
 
   const rows = await db
