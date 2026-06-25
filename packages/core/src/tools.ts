@@ -17,8 +17,7 @@ export interface ToolContext {
 // does not expose .parse() in v6 type signatures, even though the underlying
 // Zod schema does at runtime).
 export const searchDocumentsInputSchema = z.object({
-  query: z.string().min(1).describe("What to search for"),
-  k: z.number().int().min(1).max(8).default(4).describe("How many passages")
+  query: z.string().describe("What to look for in the user's documents")
 });
 
 export const extractFieldsInputSchema = z.object({
@@ -31,7 +30,10 @@ export function searchDocumentsTool(ctx: ToolContext) {
     description:
       "Semantic search across the user's uploaded documents. Returns the most relevant passages.",
     inputSchema: searchDocumentsInputSchema,
-    execute: async ({ query, k }) => ctx.search(query, k)
+    // Fixed k=4: a single string parameter is far more reliable for
+    // function-calling models (especially Groq/Llama) than a constrained
+    // integer argument, which can trigger "failed to call a function" errors.
+    execute: async ({ query }) => ctx.search(query, 4)
   });
 }
 

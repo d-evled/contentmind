@@ -8,7 +8,7 @@ import {
 import { and, gt, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { rateLimits } from "@/db/schema";
-import { buildTools, checkRateLimit } from "@contentmind/core";
+import { searchDocumentsTool, checkRateLimit } from "@contentmind/core";
 import { chatModel } from "@/lib/ai";
 import { retrieve } from "@/lib/retrieval";
 import { isE2E, E2E_USER_ID } from "@/lib/e2e";
@@ -52,18 +52,22 @@ export async function POST(req: Request) {
 
   const { messages }: { messages: UIMessage[] } = await req.json();
 
-  const tools = buildTools({
-    search: async (query, k) => {
-      const hits = await retrieve(query, userId!, k);
-      return hits.map((c) => ({
-        chunkId: c.id,
-        documentId: c.documentId,
-        documentName: c.documentName,
-        quote: c.content,
-      }));
-    },
-    extract: async () => ({}),
-  });
+  // Register only searchDocuments — a single, simple tool is the most reliable
+  // shape for function-calling models. extractFields is intentionally omitted.
+  const tools = {
+    searchDocuments: searchDocumentsTool({
+      search: async (query, k) => {
+        const hits = await retrieve(query, userId!, k);
+        return hits.map((c) => ({
+          chunkId: c.id,
+          documentId: c.documentId,
+          documentName: c.documentName,
+          quote: c.content,
+        }));
+      },
+      extract: async () => ({}),
+    }),
+  };
 
   const result = streamText({
     model: chatModel(),

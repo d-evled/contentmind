@@ -7,15 +7,15 @@ describe("searchDocumentsTool", () => {
       { documentName: "a.pdf", quote: "hello", chunkId: "c1", documentId: "d1" }
     ]);
     const tool = searchDocumentsTool({ search, extract: vi.fn() });
-    const out = await tool.execute!({ query: "hi", k: 3 }, { toolCallId: "t", messages: [] });
-    expect(search).toHaveBeenCalledWith("hi", 3);
+    const out = await tool.execute!({ query: "hi" }, { toolCallId: "t", messages: [] });
+    expect(search).toHaveBeenCalledWith("hi", 4);
     expect(out).toEqual([{ documentName: "a.pdf", quote: "hello", chunkId: "c1", documentId: "d1" }]);
   });
 
   it("rejects invalid input (missing query)", () => {
     // tool.inputSchema is typed as FlexibleSchema in v6, which doesn't expose
     // .parse() in the type system. Use the exported raw Zod schema instead.
-    expect(() => searchDocumentsInputSchema.parse({ k: 2 })).toThrow();
+    expect(() => searchDocumentsInputSchema.parse({})).toThrow();
   });
 });
 
