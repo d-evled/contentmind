@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/auth";
 import { isE2E } from "@/lib/e2e";
+import { SettingsMenu } from "@/components/settings/SettingsMenu";
 
 export default async function AppLayout({
   children,
@@ -32,6 +33,7 @@ export default async function AppLayout({
         </Link>
 
         <div className="flex items-center gap-3">
+          <SettingsMenu />
           {user && (
             <span className="flex items-center gap-2">
               {user.image && (

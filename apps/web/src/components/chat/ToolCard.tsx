@@ -106,7 +106,7 @@ export function ToolCard({ part }: { part: ToolPart }) {
       )}
 
       {errored && (
-        <p className="border-t border-line px-3.5 py-2 text-[12.5px] text-red-600">
+        <p className="border-t border-line px-3.5 py-2 text-[12.5px] text-danger">
           {part.errorText ?? "Tool call failed"}
         </p>
       )}

@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
+/* Class/attribute dark mode: `dark:` utilities respond to <html data-theme="dark">. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /* ---------------------------------------------------------------------------
    ContentMind design system — "calm editorial intelligence"
    Warm bone paper · deep warm ink · one electric-cobalt accent · hairlines
+   Light is the default; the dark palette overrides the tokens below.
 --------------------------------------------------------------------------- */
 @theme {
   --color-paper: #f4f2ec; /* warm bone canvas */
@@ -18,6 +22,14 @@
   --color-accent-ink: #1f28c4;
   --color-accent-weak: #e9eaff;
   --color-ok: #1a8a52;
+  --color-danger: #c5402f;
+  --color-danger-weak: #fbe9e6;
+
+  /* Code blocks stay dark in both themes (just tuned per theme). */
+  --color-code-bg: #1b1a16;
+  --color-code-fg: #f4f2ec;
+
+  --grain-opacity: 0.035;
 
   --font-sans: var(--font-hanken);
   --font-display: var(--font-instrument-serif);
@@ -27,6 +39,30 @@
   --radius-sm: 9px;
   --radius-md: 13px;
   --radius-lg: 20px;
+}
+
+/* --- Dark palette — warm charcoal canvas, brighter cobalt -------------------- */
+html[data-theme="dark"] {
+  --color-paper: #16140f; /* warm near-black canvas */
+  --color-paper-2: #1d1b14; /* sidebar / raised */
+  --color-surface: #211e17; /* cards / composer */
+  --color-ink: #efe9dc; /* warm off-white text */
+  --color-ink-soft: #d6d0c2;
+  --color-muted: #9c9686;
+  --color-faint: #6c6657;
+  --color-line: #2c2920;
+  --color-line-strong: #3a362b;
+  --color-accent: #7c84ff; /* cobalt lifted for dark */
+  --color-accent-ink: #a3a8ff;
+  --color-accent-weak: #23264a;
+  --color-ok: #4cc183;
+  --color-danger: #ef7363;
+  --color-danger-weak: #34201d;
+
+  --color-code-bg: #0f0e0a;
+  --color-code-fg: #e9e3d6;
+
+  --grain-opacity: 0.05;
 }
 
 :root {
@@ -45,6 +81,8 @@ body {
   font-feature-settings: "cv01", "ss01";
   letter-spacing: -0.011em;
   text-rendering: optimizeLegibility;
+  /* Gentle cross-fade when switching themes. */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Subtle paper grain — adds warmth/depth, never distracts */
@@ -54,7 +92,7 @@ body::before {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.035;
+  opacity: var(--grain-opacity);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 body > * {
@@ -247,8 +285,8 @@ body > * {
 .cm-prose pre {
   font-family: var(--font-mono), monospace;
   font-size: 0.84em;
-  background: var(--color-ink);
-  color: #f4f2ec;
+  background: var(--color-code-bg);
+  color: var(--color-code-fg);
   border-radius: var(--radius-md);
   padding: 0.9rem 1rem;
   overflow-x: auto;

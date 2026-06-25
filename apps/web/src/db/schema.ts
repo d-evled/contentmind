@@ -60,6 +60,17 @@ export const verificationTokens = pgTable(
 
 // --- App tables ---
 
+export const folders = pgTable("folders", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+});
+
 export const documents = pgTable("documents", {
   id: text("id")
     .primaryKey()
@@ -67,6 +78,11 @@ export const documents = pgTable("documents", {
   userId: text("userId")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  // Null = "unfiled". Deleting a folder unfiles its documents rather than
+  // destroying them (onDelete: set null).
+  folderId: text("folderId").references(() => folders.id, {
+    onDelete: "set null",
+  }),
   name: text("name").notNull(),
   status: text("status").notNull().default("processing"),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),

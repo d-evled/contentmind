@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 
 type UploadStatus = "idle" | "uploading" | "done" | "error";
 
-export function DocUpload() {
+export function DocUpload({ onUploaded }: { onUploaded?: () => void } = {}) {
   const [status, setStatus] = useState<UploadStatus>("idle");
   const [dragOver, setDragOver] = useState(false);
   const [errorMsg, setErrorMsg] = useState("Upload failed — please try again");
@@ -19,6 +19,7 @@ export function DocUpload() {
       const res = await fetch("/api/upload", { method: "POST", body });
       if (res.ok) {
         setStatus("done");
+        onUploaded?.();
       } else {
         const data = (await res.json().catch(() => null)) as {
           error?: string;
@@ -40,7 +41,7 @@ export function DocUpload() {
   };
 
   return (
-    <div className="flex min-h-0 flex-col p-4">
+    <div className="flex flex-col">
       {/* Labelled dropzone — input is sr-only inside the label so click propagates */}
       <label
         htmlFor="doc-file-input"
@@ -55,7 +56,7 @@ export function DocUpload() {
           const f = e.dataTransfer.files[0];
           if (f) upload(f);
         }}
-        className={`group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-[var(--radius-md)] border border-dashed p-6 text-center transition-colors duration-150 ${
+        className={`group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-[var(--radius-md)] border border-dashed p-5 text-center transition-colors duration-150 ${
           dragOver
             ? "border-accent bg-accent-weak"
             : "border-line-strong bg-surface hover:border-accent hover:bg-paper-2/60"
@@ -104,7 +105,7 @@ export function DocUpload() {
         aria-live="polite"
         className={`mt-3 flex min-h-[1.25rem] items-start gap-1.5 text-[12.5px] leading-snug ${
           status === "error"
-            ? "text-red-600"
+            ? "text-danger"
             : status === "done"
               ? "text-ok"
               : "text-muted"
@@ -123,9 +124,8 @@ export function DocUpload() {
         <span>{statusMessage[status]}</span>
       </p>
 
-      <p className="mt-auto pt-6 text-[11.5px] leading-relaxed text-faint">
-        Tip: use a text-based document. Scanned images have no selectable text to
-        read.
+      <p className="mt-2.5 text-[11px] leading-relaxed text-faint">
+        Tip: use a text-based document — scanned images have no selectable text.
       </p>
     </div>
   );
