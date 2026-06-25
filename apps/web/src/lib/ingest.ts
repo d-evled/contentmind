@@ -42,6 +42,7 @@ export async function ingestFile(file: File, userId: string): Promise<string> {
       .where(sql`${documents.id} = ${doc!.id}`);
     return doc!.id;
   } catch (err) {
+    console.error(`[ingest] failed for "${file.name}" (${file.type}):`, err);
     await db
       .update(documents)
       .set({ status: "error" })

@@ -20,7 +20,8 @@ export async function POST(req: Request) {
   try {
     const id = await ingestFile(file, session.user.id);
     return NextResponse.json({ id });
-  } catch {
+  } catch (err) {
+    console.error("[upload] ingest failed:", err);
     return NextResponse.json({ error: "ingest failed" }, { status: 500 });
   }
 }
