@@ -12,7 +12,8 @@ export function CitationChip({
     <button
       onClick={() => onActivate(citation)}
       aria-label={`Source ${citation.marker}: ${citation.documentName}`}
-      className="mx-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded bg-blue-100 px-1 align-text-top text-xs font-medium text-blue-700 hover:bg-blue-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"
+      title={citation.documentName}
+      className="inline-flex h-5 min-w-5 items-center justify-center rounded-[5px] bg-accent-weak px-1 font-mono text-[11px] font-medium text-accent-ink transition-colors duration-150 hover:bg-accent hover:text-paper"
     >
       {citation.marker}
     </button>

@@ -1,45 +1,279 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ---------------------------------------------------------------------------
+   ContentMind design system — "calm editorial intelligence"
+   Warm bone paper · deep warm ink · one electric-cobalt accent · hairlines
+--------------------------------------------------------------------------- */
+@theme {
+  --color-paper: #f4f2ec; /* warm bone canvas */
+  --color-paper-2: #efece4; /* slightly deeper paper (sidebar) */
+  --color-surface: #fffefb; /* cards / composer */
+  --color-ink: #1b1a16; /* warm near-black text */
+  --color-ink-soft: #3d3a33;
+  --color-muted: #79756a; /* secondary text */
+  --color-faint: #a8a397; /* tertiary / placeholders */
+  --color-line: #e7e2d6; /* hairline borders */
+  --color-line-strong: #d9d3c4;
+  --color-accent: #2f3ae6; /* electric cobalt */
+  --color-accent-ink: #1f28c4;
+  --color-accent-weak: #e9eaff;
+  --color-ok: #1a8a52;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-hanken);
+  --font-display: var(--font-instrument-serif);
   --font-mono: var(--font-geist-mono);
+
+  --radius-xs: 6px;
+  --radius-sm: 9px;
+  --radius-md: 13px;
+  --radius-lg: 20px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --shadow-soft: 0 1px 2px rgba(27, 26, 22, 0.04), 0 6px 20px -8px rgba(27, 26, 22, 0.12);
+  --shadow-pop: 0 2px 4px rgba(27, 26, 22, 0.05), 0 12px 32px -10px rgba(27, 26, 22, 0.18);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "cv01", "ss01";
+  letter-spacing: -0.011em;
+  text-rendering: optimizeLegibility;
 }
 
-/* Reduced-motion: disable animations/transitions for users who prefer it */
+/* Subtle paper grain — adds warmth/depth, never distracts */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+body > * {
+  position: relative;
+  z-index: 1;
+}
+
+::selection {
+  background: var(--color-accent-weak);
+  color: var(--color-accent-ink);
+}
+
+/* Thin, quiet scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--color-line-strong);
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--color-faint);
+  background-clip: padding-box;
+}
+
+/* Consistent keyboard focus ring */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* --- Motion ---------------------------------------------------------------- */
+@keyframes cm-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes cm-scan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+@keyframes cm-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.15;
+  }
+}
+@keyframes cm-dots {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+.cm-rise {
+  animation: cm-rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* streaming caret that trails the assistant text */
+.cm-caret::after {
+  content: "";
+  display: inline-block;
+  width: 0.5ch;
+  height: 1.05em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  background: var(--color-accent);
+  border-radius: 1px;
+  animation: cm-blink 1s steps(1) infinite;
+}
+
+/* scanning bar for a running tool */
+.cm-scan {
+  position: relative;
+  overflow: hidden;
+}
+.cm-scan::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 35%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-accent) 22%, transparent),
+    transparent
+  );
+  animation: cm-scan 1.4s ease-in-out infinite;
+}
+
+.cm-typing span {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin: 0 1.5px;
+  border-radius: 9999px;
+  background: var(--color-accent);
+  animation: cm-dots 1.2s ease-in-out infinite;
+}
+.cm-typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.cm-typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* --- Markdown (assistant answers) ------------------------------------------ */
+.cm-prose {
+  font-size: 0.975rem;
+  line-height: 1.7;
+  color: var(--color-ink);
+}
+.cm-prose > * + * {
+  margin-top: 0.85em;
+}
+.cm-prose h1,
+.cm-prose h2,
+.cm-prose h3 {
+  font-family: var(--font-display), serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-top: 1.2em;
+}
+.cm-prose h1 {
+  font-size: 1.5rem;
+}
+.cm-prose h2 {
+  font-size: 1.3rem;
+}
+.cm-prose h3 {
+  font-size: 1.12rem;
+}
+.cm-prose a {
+  color: var(--color-accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+.cm-prose strong {
+  font-weight: 600;
+}
+.cm-prose ul,
+.cm-prose ol {
+  padding-left: 1.25em;
+}
+.cm-prose ul {
+  list-style: disc;
+}
+.cm-prose ol {
+  list-style: decimal;
+}
+.cm-prose li + li {
+  margin-top: 0.3em;
+}
+.cm-prose code {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.85em;
+  background: var(--color-paper-2);
+  border: 1px solid var(--color-line);
+  border-radius: 5px;
+  padding: 0.1em 0.36em;
+}
+.cm-prose pre {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.84em;
+  background: var(--color-ink);
+  color: #f4f2ec;
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  line-height: 1.55;
+}
+.cm-prose pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+}
+.cm-prose blockquote {
+  border-left: 2px solid var(--color-accent);
+  padding-left: 0.9rem;
+  color: var(--color-muted);
+}
+
+/* Reduced-motion: honour user preference */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
 }
-
-/* Focus-visible: consistent keyboard-focus ring across browsers */
-:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
-}
-
-/* Note: .sr-only is provided by Tailwind v4 — no need to redefine it here */

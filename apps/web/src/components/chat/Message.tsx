@@ -15,9 +15,11 @@ interface SearchHit {
 export function Message({
   message,
   onCitationActivate = () => {},
+  streaming = false,
 }: {
   message: UIMessage;
   onCitationActivate?: (c: Citation) => void;
+  streaming?: boolean;
 }) {
   // Collect text from all text parts
   const text = message.parts
@@ -53,32 +55,78 @@ export function Message({
   const citations =
     message.role === "assistant" ? extractCitations(text, sources) : [];
 
-  return (
-    <div
-      data-role={message.role}
-      className={
-        message.role === "user"
-          ? "ml-auto max-w-[80%] rounded-2xl bg-neutral-100 px-4 py-2"
-          : "max-w-none"
-      }
-    >
-      {toolParts.map((p) => (
-        <ToolCard key={p.toolCallId} part={p} />
-      ))}
-      <div className="prose prose-neutral max-w-none">
-        <ReactMarkdown>{text}</ReactMarkdown>
-      </div>
-      {citations.length > 0 && (
-        <div className="mt-1 flex flex-wrap gap-1">
-          {citations.map((c) => (
-            <CitationChip
-              key={c.marker}
-              citation={c}
-              onActivate={onCitationActivate}
-            />
-          ))}
+  // --- User message: a compact right-aligned bubble ---
+  if (message.role === "user") {
+    return (
+      <div className="cm-rise flex justify-end" data-role="user">
+        <div className="max-w-[82%] rounded-[var(--radius-md)] rounded-br-md bg-ink px-4 py-2.5 text-[14.5px] leading-relaxed text-paper">
+          {text}
         </div>
-      )}
+      </div>
+    );
+  }
+
+  // --- Assistant message: avatar + tool cards + answer + citations ---
+  const showThinking = streaming && text.length === 0 && toolParts.length === 0;
+
+  return (
+    <div className="cm-rise flex gap-3.5" data-role="assistant">
+      <span
+        aria-hidden="true"
+        className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-[8px] bg-ink text-[12px] font-bold text-paper"
+      >
+        C
+      </span>
+
+      <div className="min-w-0 flex-1">
+        {toolParts.map((p) => (
+          <ToolCard key={p.toolCallId} part={p} />
+        ))}
+
+        {text.length > 0 && (
+          <div className="cm-prose">
+            <ReactMarkdown>{text}</ReactMarkdown>
+          </div>
+        )}
+
+        {showThinking && (
+          <span
+            className="cm-typing inline-flex items-center pt-1"
+            aria-label="Thinking"
+            role="status"
+          >
+            <span />
+            <span />
+            <span />
+          </span>
+        )}
+
+        {streaming && text.length > 0 && (
+          <span
+            className="cm-typing mt-1.5 inline-flex items-center"
+            aria-hidden="true"
+          >
+            <span />
+            <span />
+            <span />
+          </span>
+        )}
+
+        {citations.length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-1.5">
+            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-faint">
+              Sources
+            </span>
+            {citations.map((c) => (
+              <CitationChip
+                key={c.marker}
+                citation={c}
+                onActivate={onCitationActivate}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

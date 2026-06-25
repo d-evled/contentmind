@@ -32,22 +32,25 @@ export function ChatPanel() {
 
   return (
     <section
-      className="flex min-h-0 flex-1 flex-col"
+      className="flex min-h-0 flex-1 flex-col bg-paper"
       aria-label="Chat with your documents"
     >
       <MessageList
         messages={messages}
         isStreaming={isStreaming}
         onCitationActivate={setActiveCitation}
+        onExample={(text) => sendMessage({ text })}
       />
+
       {activeCitation && (
-        <div className="border-t bg-white shadow-sm">
+        <div className="cm-rise border-t border-line bg-surface shadow-[var(--shadow-pop)]">
           <SourcePanel
             active={activeCitation}
             onClose={() => setActiveCitation(null)}
           />
         </div>
       )}
+
       <Composer
         onSend={(text) => sendMessage({ text })}
         onStop={stop}
